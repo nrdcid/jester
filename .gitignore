@@ -270,3 +270,6 @@ core.*
 *.pyc
 *.pyo
 *.pyd
+
+# Scratch work
+tutorials/
