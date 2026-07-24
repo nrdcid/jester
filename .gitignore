@@ -272,4 +272,7 @@ core.*
 *.pyd
 
 # Scratch work
+scratch/
 tutorials/
+# CocoIndex Code (ccc)
+/.cocoindex_code/
