@@ -1,23 +1,24 @@
 import torch.nn as nn
 import torch
+from dataclasses import dataclass
+
+@dataclass
+class Config:
+    n_features: int
+    n_hidden: int
+    n_instances: int
 
 class Autoencoder(nn.Module):
-    def __init__(self, input_dim, encoding_dim):
+    def __init__(self, 
+                 config,
+                 feature_prob,
+                 importance,
+                 device):
         super(Autoencoder, self).__init__()
-        self.encoder = nn.Linear(input_dim, encoding_dim)
-        self.decoder = nn.Linear(encoding_dim, input_dim)
+        self.config = config
+        self.encoder = nn.Linear(config.n_features, config.n_hidden)
+        self.decoder = nn.Linear(config.n_hidden, config.n_features)
 
-
-    def forward(self, x):
-        x = nn.ReLU(self.encoder(x))
-        x = nn.Sigmoid(self.decoder())
-        return x
-
-class SparseAutoencoder(Autoencoder):
-    def __init__(self, input_dim, encoding_dim):
-        super(SparseAutoencoder, self).__init__(input_dim, encoding_dim)
-        self.encoder = nn.Linear(input_dim, encoding_dim)
-        self.decoder = nn.Linear(encoding_dim, input_dim)
 
     def forward(self, x):
         x = nn.ReLU(self.encoder(x))
