@@ -11,7 +11,7 @@ built from scratch using only NumPy. It includes:
 - Parameter: Trainable parameters with gradient tracking
 
 Example:
-    >>> from mlp import Network, Dense, ReLU, Sigmoid, MSE, SGD
+    >>> from jester.nn import Network, Dense, ReLU, Sigmoid, MSE, SGD
     >>>
     >>> # Build a simple network
     >>> network = Network(optimizer=SGD(learning_rate=0.1), loss=MSE())

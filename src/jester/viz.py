@@ -67,3 +67,38 @@ def show_decision_surface(model, X, y, ax=None):
         ax.set_xlabel('Feature 1')
         ax.set_ylabel('Feature 2')
         ax.set_title('Decision Surface')
+
+
+def display_confusion(c_matrix):
+    """
+    Display a confusion matrix.
+
+    Args:
+        c_matrix: square confusion matrix, shape (num_classes, num_classes)
+    """
+    _, ax = plt.subplots()
+    ax.matshow(c_matrix, cmap=plt.cm.Blues)
+    for i in range(c_matrix.shape[0]):
+        for j in range(c_matrix.shape[0]):
+            ax.text(i, j, str(c_matrix[j, i]), va='center', ha='center')
+    ax.set_xlabel("predicted label", fontsize=16)
+    ax.set_ylabel("true label", fontsize=16)
+    plt.show()
+
+
+def plot_data(X, y):
+    """
+    Scatter-plot 2D binary data with labels expected as -1 or 1.
+
+    Parameters
+    ----------
+    X : np.ndarray of shape (n_samples, 2)
+    y : np.ndarray of shape (n_samples,)
+    """
+    fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(8, 8))
+    colors = ["steelblue" if yi == -1 else "#a76c6e" for yi in y]
+    ax.scatter(X[:, 0], X[:, 1], color=colors, s=75)
+    ax.grid(alpha=0.25)
+    ax.set_xlabel(r"$x_1$", fontsize=16)
+    ax.set_ylabel(r"$x_2$", fontsize=16)
+    plt.show()

@@ -7,12 +7,11 @@ for KNN classifiers and regressors.
 
 import numpy as np
 import matplotlib.pyplot as plt
-import data
-import helpers
+from jester.viz import display_confusion
 from .classifiers import KNNClassifier
 
 
-def prepare_data(dataset: data.Dataset):
+def prepare_data(dataset):
     """
     Prepare dataset for KNN by reshaping features and reporting statistics.
 
@@ -22,12 +21,12 @@ def prepare_data(dataset: data.Dataset):
 
     Parameters
     ----------
-    dataset : data.Dataset
+    dataset :
         Dataset object with X_train, X_valid, X_test arrays
 
     Returns
     -------
-    dataset : data.Dataset
+    dataset :
         Modified dataset with reshaped arrays
 
     Side Effects
@@ -62,7 +61,7 @@ def prepare_data(dataset: data.Dataset):
     return dataset
 
 
-def evaluate(ks_range, dataset: data.Dataset, KNNClass=KNNClassifier):
+def evaluate(ks_range, dataset, KNNClass=KNNClassifier):
     """
     Evaluate KNN model across different values of k.
 
@@ -76,7 +75,7 @@ def evaluate(ks_range, dataset: data.Dataset, KNNClass=KNNClassifier):
     ----------
     ks_range : iterable
         Range of k values to evaluate
-    dataset : data.Dataset
+    dataset :
         Dataset with train/valid/test splits
     KNNClass : class, default=KNNClassifier
         The KNN class to use (KNNClassifier or WeightedKNNClassifier)
@@ -108,7 +107,7 @@ def evaluate(ks_range, dataset: data.Dataset, KNNClass=KNNClassifier):
     acc_test = knn.accuracy(dataset.X_test, dataset.y_test)
 
     print("Accuracy Test Set:", acc_test)
-    helpers.display_confusion(knn.confusion_matrix(dataset.X_test, dataset.y_test))
+    display_confusion(knn.confusion_matrix(dataset.X_test, dataset.y_test))
 
 
 def plot_k_vs_metric(ks, train_metrics, valid_metrics, metric_name="Accuracy",

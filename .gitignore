@@ -158,9 +158,9 @@ dmypy.json
 *.ckpt
 *.safetensors
 
-# Large datasets
+# Large datasets (root-level only — not src/jester/datasets)
 data/large/
-datasets/
+/datasets/
 raw_data/
 processed_data/
 

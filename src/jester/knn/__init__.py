@@ -18,20 +18,12 @@ plot_k_vs_metric : Visualization of performance vs k
 
 Examples
 --------
->>> from knn import KNNClassifier
->>> import data
+>>> from jester.knn import KNNClassifier
 >>>
->>> # Load data
->>> binary_data = data.BinaryData()
->>>
->>> # Train classifier
 >>> clf = KNNClassifier(k=3)
->>> clf.fit(binary_data.X_train, binary_data.y_train)
->>>
->>> # Make predictions
->>> predictions = clf.predict(binary_data.X_test)
->>> accuracy = clf.accuracy(binary_data.X_test, binary_data.y_test)
->>> print(f"Accuracy: {accuracy:.3f}")
+>>> clf.fit(X_train, y_train)
+>>> predictions = clf.predict(X_test)
+>>> accuracy = clf.accuracy(X_test, y_test)
 """
 
 from .classifiers import KNNClassifier, WeightedKNNClassifier

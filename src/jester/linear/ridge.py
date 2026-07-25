@@ -1,5 +1,6 @@
+import numpy as np
 from sklearn import linear_model
-from sklearn.preprocessing import StandardScaler, MinMaxScaler
+from sklearn.preprocessing import StandardScaler
 
 
 class Ridge(object):
