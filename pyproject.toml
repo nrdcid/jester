@@ -52,3 +52,8 @@ where = ["src"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = ["test_*.py", "tests.py"]
+addopts = "-q --strict-markers"
+markers = [
+    "slow: experiment-scale runs, deselect with '-m \"not slow\"'",
+]
+python_files = ["test_*.py", "tests.py"]
