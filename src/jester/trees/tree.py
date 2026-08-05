@@ -6,7 +6,7 @@ from .nodes import LeafNode, DecisionNode
 from .splitting import best_split
 
 
-def build_tree(X, y, depth=-1, min_samples_split=2):
+def build_tree(X, y, depth=-1, min_samples_split=2, criterion="gini"):
     """
     Recursively build a decision tree.
 
@@ -21,26 +21,22 @@ def build_tree(X, y, depth=-1, min_samples_split=2):
     """
     if depth == 0 or len(y) < min_samples_split:
         # Base case: maximum depth reached or too few samples
-        tree = LeafNode(y)
-    else:
-        feature_id, threshold, left_indices, right_indices, reduction = best_split(X, y)
+        return LeafNode(y)
 
-        if reduction <= 0:
-            # No beneficial split found
-            tree = LeafNode(y)
-        else:
-            # Recursively build left and right subtrees
-            left_child = build_tree(
-                X[left_indices], y[left_indices],
-                depth - 1, min_samples_split
-            )
-            right_child = build_tree(
-                X[right_indices], y[right_indices],
-                depth - 1, min_samples_split
-            )
-            tree = DecisionNode(feature_id, threshold, left_child, right_child)
+    feature_id, threshold, left_indices, right_indices, reduction = best_split(
+        X, y, criterion=criterion
+    )
 
-    return tree
+    if reduction <= 0:
+        return LeafNode(y)
+
+    left_child = build_tree(
+        X[left_indices], y[left_indices], depth - 1, min_samples_split, criterion
+    )
+    right_child = build_tree(
+        X[right_indices], y[right_indices], depth - 1, min_samples_split, criterion
+    )
+    return DecisionNode(feature_id, threshold, left_child, right_child)
 
 
 class DecisionTree:
@@ -52,7 +48,7 @@ class DecisionTree:
     in each leaf region.
     """
 
-    def __init__(self, max_depth=-1, min_samples_split=2):
+    def __init__(self, max_depth=-1, min_samples_split=2, criterion="gini"):
         """
         Initialize the decision tree classifier.
 
@@ -62,6 +58,7 @@ class DecisionTree:
         """
         self.max_depth = max_depth
         self.min_samples_split = min_samples_split
+        self.criterion = criterion
         self.tree = None
         self.num_features = None
 
@@ -76,7 +73,9 @@ class DecisionTree:
         Returns:
             self: The fitted decision tree
         """
-        self.tree = build_tree(X, y, self.max_depth, self.min_samples_split)
+        self.tree = build_tree(
+            X, y, self.max_depth, self.min_samples_split, self.criterion
+        )
         return self
 
     def predict(self, X):

@@ -1,30 +1,61 @@
-"""
-Impurity metrics for decision tree splitting.
-"""
+"""Impurity metrics for decision tree splitting."""
 import numpy as np
 
 
+def _class_probabilities(y):
+    """Return class frequencies for labels of any dtype."""
+    y = np.asarray(y).reshape(-1)
+    if y.size == 0:
+        return np.empty(0, dtype=float)
+    _, counts = np.unique(y, return_counts=True)
+    return counts / y.size
+
+
 def gini(y):
-    """
-    Calculate the Gini impurity of labels.
-
-    Gini impurity measures the probability of incorrectly classifying a randomly
-    chosen element if it was randomly labeled according to the distribution of
-    labels in the subset.
-
-    Formula: Gini(y) = 1 - sum(p_c^2) for all classes c
-    where p_c is the probability of class c
-
-    Args:
-        y: 1-d array containing labels
-
-    Returns:
-        float: Gini impurity value between 0 (pure) and ~0.5 (maximum impurity)
-    """
-    return 1 - sum((np.bincount(y) / len(y))**2)
+    """Return Gini impurity, supporting negative and string labels."""
+    probabilities = _class_probabilities(y)
+    if probabilities.size == 0:
+        return 0.0
+    return float(1.0 - np.sum(probabilities ** 2))
 
 
-def impurity_reduction(y, left_indices, right_indices):
+def entropy(y):
+    """Return Shannon entropy in bits."""
+    probabilities = _class_probabilities(y)
+    if probabilities.size == 0:
+        return 0.0
+    return float(-np.sum(probabilities * np.log2(probabilities)))
+
+
+def misclassification(y):
+    """Return node misclassification error."""
+    probabilities = _class_probabilities(y)
+    if probabilities.size == 0:
+        return 0.0
+    return float(1.0 - probabilities.max())
+
+
+CRITERIA = {
+    "gini": gini,
+    "entropy": entropy,
+    "misclassification": misclassification,
+}
+
+
+def resolve_criterion(criterion):
+    """Resolve a criterion name or callable to an impurity function."""
+    if callable(criterion):
+        return criterion
+    try:
+        return CRITERIA[criterion]
+    except KeyError:
+        raise ValueError(
+            f"unknown criterion {criterion!r}; expected a callable or one of "
+            f"{sorted(CRITERIA)}"
+        ) from None
+
+
+def impurity_reduction(y, left_indices, right_indices, criterion=gini):
     """
     Calculate the reduction in impurity from a split.
 
@@ -42,13 +73,18 @@ def impurity_reduction(y, left_indices, right_indices):
     Returns:
         float: The impurity reduction value (positive means improvement)
     """
-    left_impurity = gini(y[left_indices])
-    right_impurity = gini(y[right_indices])
-    total_impurity = gini(y)
+    impurity = resolve_criterion(criterion)
+    y = np.asarray(y).reshape(-1)
+    if y.size == 0:
+        return 0.0
+
+    left_impurity = impurity(y[left_indices])
+    right_impurity = impurity(y[right_indices])
+    total_impurity = impurity(y)
 
     weighted_child_impurity = (
         (len(left_indices) / len(y)) * left_impurity +
         (len(right_indices) / len(y)) * right_impurity
     )
 
-    return total_impurity - weighted_child_impurity
+    return float(total_impurity - weighted_child_impurity)

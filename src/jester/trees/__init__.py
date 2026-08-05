@@ -7,7 +7,14 @@ with support for Gini impurity, recursive tree building, and feature importance.
 
 from .tree import DecisionTree, build_tree
 from .nodes import LeafNode, DecisionNode
-from .metrics import gini, impurity_reduction
+from .metrics import (
+    CRITERIA,
+    entropy,
+    gini,
+    impurity_reduction,
+    misclassification,
+    resolve_criterion,
+)
 from .splitting import best_split
 from .utils import compute_label, split_values
 
@@ -18,6 +25,10 @@ __all__ = [
     "LeafNode",
     "DecisionNode",
     "gini",
+    "entropy",
+    "misclassification",
+    "CRITERIA",
+    "resolve_criterion",
     "impurity_reduction",
     "best_split",
     "compute_label",

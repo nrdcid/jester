@@ -3,10 +3,10 @@ Functions for finding optimal splits in decision trees.
 """
 import numpy as np
 from .utils import split_values
-from .metrics import impurity_reduction
+from .metrics import impurity_reduction, resolve_criterion
 
 
-def best_split(X, y):
+def best_split(X, y, criterion="gini"):
     """
     Find the best feature and threshold for splitting the data.
 
@@ -26,6 +26,7 @@ def best_split(X, y):
                - best_right_indices: Indices of samples going right
                - best_reduction: Impurity reduction achieved by this split
     """
+    criterion = resolve_criterion(criterion)
     best_feature_id, best_threshold = None, None
     best_left_indices, best_right_indices = None, None
     best_reduction = -np.inf
@@ -34,7 +35,9 @@ def best_split(X, y):
         for threshold in split_values(X[:, feature_id]):
             left_indices = np.where(X[:, feature_id] <= threshold)[0]
             right_indices = np.where(X[:, feature_id] > threshold)[0]
-            reduction = impurity_reduction(y, left_indices, right_indices)
+            reduction = impurity_reduction(
+                y, left_indices, right_indices, criterion=criterion
+            )
 
             if reduction > best_reduction:
                 best_reduction = reduction
