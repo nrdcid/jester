@@ -15,14 +15,18 @@ class AdaBoost(BaggingEnsemble):
     Sample weights are adaptively updated based on prediction errors.
     """
 
-    def __init__(self, n_estimators):
+    def __init__(self, n_estimators, base_learner=None, random_state=None,
+                 learning_rate=1.0):
         """
         Initialize the AdaBoost ensemble.
 
         Args:
             n_estimators: Number of boosting rounds
         """
-        super(AdaBoost, self).__init__(n_estimators)
+        super(AdaBoost, self).__init__(
+            n_estimators, base_learner=base_learner, random_state=random_state
+        )
+        self.learning_rate = learning_rate
         self.num_classes = None
         self.alphas = []  # Estimator weights
         self.classes_ = None
@@ -60,7 +64,7 @@ class AdaBoost(BaggingEnsemble):
 
         for _ in range(self.n_estimators):
             # Train weak learner with current sample weights
-            model = get_weak_learner()
+            model = get_weak_learner(self.base_learner)
             model.fit(X_train, y_train, sample_weight=weights)
 
             # Get predictions and calculate weighted error
@@ -72,6 +76,7 @@ class AdaBoost(BaggingEnsemble):
 
             # Calculate estimator weight (SAMME formula)
             alpha = np.log((1 - error) / error) + np.log(self.num_classes - 1)
+            alpha *= self.learning_rate
 
             # Update sample weights (exponentially increase for misclassified)
             weights *= np.exp(alpha * (y_pred != y_train))

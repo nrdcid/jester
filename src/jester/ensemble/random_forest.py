@@ -45,12 +45,12 @@ class RandomForest(BaggingEnsemble):
         """
         input_dim = X_train.shape[1]
         output_dim = max(1, int(np.ceil(self.features_ratio * input_dim)))
-        indices = np.random.choice(
+        indices = self._rng.choice(
             len(X_train),
             int(self.sample_ratio * len(X_train)),
             replace=True
         )
-        selected_features = random_selection(input_dim, output_dim)
+        selected_features = random_selection(input_dim, output_dim, rng=self._rng)
 
         return X_train[indices][:, selected_features], y_train[indices], selected_features
 
@@ -71,6 +71,7 @@ class RandomForest(BaggingEnsemble):
         self.estimators = []
         self.selections = []
         self.classes_ = np.unique(y_train)
+        self._rng = np.random.default_rng(self.random_state)
 
         for _ in range(self.n_estimators):
             X_sub, y_sub, selected = self.sample_data(X_train, y_train)

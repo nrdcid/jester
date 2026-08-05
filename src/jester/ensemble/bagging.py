@@ -13,7 +13,8 @@ class BaggingEnsemble:
     (sampled with replacement) and aggregates their predictions through voting.
     """
 
-    def __init__(self, n_estimators, sample_ratio=1.0):
+    def __init__(self, n_estimators, sample_ratio=1.0, base_learner=None,
+                 random_state=None):
         """
         Initialize the bagging ensemble.
 
@@ -23,7 +24,10 @@ class BaggingEnsemble:
         """
         self.n_estimators = n_estimators
         self.sample_ratio = sample_ratio
+        self.base_learner = base_learner
+        self.random_state = random_state
         self.estimators = []
+        self._rng = np.random.default_rng(random_state)
 
     def sample_data(self, X_train, y_train):
         """
@@ -37,7 +41,7 @@ class BaggingEnsemble:
             tuple: (X_sample, y_sample) - Sampled features and labels
         """
         size = int(self.sample_ratio * len(X_train))
-        indices = np.random.choice(len(X_train), size, replace=True)
+        indices = self._rng.choice(len(X_train), size, replace=True)
 
         X_sample = X_train[indices]
         y_sample = y_train[indices]
@@ -58,12 +62,12 @@ class BaggingEnsemble:
         Returns:
             self: The fitted ensemble
         """
-        np.random.seed(42)  # For reproducibility
+        self._rng = np.random.default_rng(self.random_state)
         self.estimators = []
 
         for _ in range(self.n_estimators):
             X_sample, y_sample = self.sample_data(X_train, y_train)
-            model = get_weak_learner()
+            model = get_weak_learner(self.base_learner)
             model.fit(X_sample, y_sample)
             self.estimators.append(model)
 
