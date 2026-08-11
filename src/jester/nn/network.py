@@ -33,7 +33,7 @@ class Network(object):
         self.layers = []
         self.optimizer.set_layers(self.layers)
 
-    def add_layer(self, layer):
+    def add(self, layer):
         """
         Add a layer to the network.
 
@@ -42,8 +42,20 @@ class Network(object):
 
         Args:
             layer: Layer instance to add to the network
+
+        Returns:
+            The network instance, allowing chained calls.
         """
         self.layers.append(layer)
+        return self
+
+    def add_layer(self, layer):
+        """Add a layer using the legacy method name.
+
+        ``add`` is the preferred Sequential-style API. This wrapper keeps
+        existing callers working while sharing the same implementation.
+        """
+        return self.add(layer)
 
     def predict(self, x):
         """

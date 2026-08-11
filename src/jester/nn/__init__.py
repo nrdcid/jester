@@ -15,10 +15,8 @@ Example:
     >>>
     >>> # Build a simple network
     >>> network = Network(optimizer=SGD(learning_rate=0.1), loss=MSE())
-    >>> network.add_layer(Dense(2, 16))
-    >>> network.add_layer(ReLU())
-    >>> network.add_layer(Dense(16, 1))
-    >>> network.add_layer(Sigmoid())
+    >>> network.add(Dense(2, 16)).add(ReLU())
+    >>> network.add(Dense(16, 1)).add(Sigmoid())
     >>>
     >>> # Train the network
     >>> loss = network.fit(X_train, y_train)
