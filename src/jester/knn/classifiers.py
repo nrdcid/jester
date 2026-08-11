@@ -35,8 +35,10 @@ class KNNClassifier:
         Most common label in training set (used for tie-breaking)
     """
 
-    def __init__(self, k=5):
+    def __init__(self, k=5, metric="euclidean", metric_params=None):
         self._k = k
+        self.metric = metric
+        self.metric_params = {} if metric_params is None else dict(metric_params)
         self._ball_tree = None
         self._y = None
         self.label_to_index = None
@@ -59,7 +61,9 @@ class KNNClassifier:
         self : KNNClassifier
             The fitted classifier
         """
-        self._ball_tree = sklearn.neighbors.BallTree(X)
+        self._ball_tree = sklearn.neighbors.BallTree(
+            X, metric=self.metric, **self.metric_params
+        )
         self._y = np.asarray(y)
         classes = np.unique(self._y)
         self.label_to_index = dict(zip(classes, range(classes.shape[0])))

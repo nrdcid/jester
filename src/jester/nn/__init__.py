@@ -30,6 +30,7 @@ from .layers import Layer, Dense, Sigmoid, ReLU
 from .losses import MSE
 from .optimizers import SGD, Adam
 from .network import Network
+from .rnn import RNN
 
 __all__ = [
     'Parameter',
@@ -41,6 +42,7 @@ __all__ = [
     'SGD',
     'Adam',
     'Network',
+    'RNN',
 ]
 
 __version__ = '0.1.0'
