@@ -49,6 +49,7 @@ class RNN(Layer):
         self.W_hh = []
         self.b = [] if self.bias else None
         self.parameters = []
+        self.last_hidden_state = None
 
         for layer in range(self.n_layers):
             in_dim = self.input_size if layer == 0 else self.hidden_size
@@ -87,11 +88,10 @@ class RNN(Layer):
                (n_layers, batch_size, hidden_size). Zeros if omitted.
 
         Returns:
-            tuple:
-                output — top-layer hidden states for every time step,
-                shape (batch_size, seq_length, hidden_size)
-                h_n — final hidden state per layer,
-                shape (n_layers, batch_size, hidden_size)
+            Top-layer hidden states for every time step, with shape
+            ``(batch_size, seq_length, hidden_size)``. The final hidden state
+            for every layer is available as ``last_hidden_state`` with shape
+            ``(n_layers, batch_size, hidden_size)``.
         """
         x = np.asarray(x, dtype=float)
         if x.ndim != 3:
@@ -138,7 +138,8 @@ class RNN(Layer):
             layer_input = np.stack(outs, axis=1)
 
         self.saved_arrays = [cache, batch_size, seq_length]
-        return layer_input, h_n
+        self.last_hidden_state = h_n
+        return layer_input
 
     def backward(self, grad_output, grad_h=None):
         """
