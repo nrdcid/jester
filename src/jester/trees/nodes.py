@@ -41,6 +41,14 @@ class LeafNode:
         return self.label * np.ones(X.shape[0])
 
 
+class RegressionLeafNode(LeafNode):
+    """Terminal node that predicts the mean target value."""
+
+    def __init__(self, node_targets):
+        targets = np.asarray(node_targets, dtype=float).reshape(-1)
+        self.label = float(np.mean(targets))
+
+
 class DecisionNode:
     """
     Internal (non-terminal) node in a decision tree.
@@ -69,7 +77,7 @@ class DecisionNode:
         """Check if this node is a terminal (leaf) node."""
         return False
 
-    def add_importance(self, importances, X, y):
+    def add_importance(self, importances, X, y, criterion="gini"):
         """
         Recursively compute feature importances.
 
@@ -86,13 +94,19 @@ class DecisionNode:
         """
         left_indices = np.where(X[:, self.feature_id] <= self.threshold)[0]
         right_indices = np.where(X[:, self.feature_id] > self.threshold)[0]
-        reduction = impurity_reduction(y, left_indices, right_indices)
+        reduction = impurity_reduction(
+            y, left_indices, right_indices, criterion=criterion
+        )
         importances[self.feature_id] += len(y) * reduction
 
         if not self.left.is_terminal():
-            self.left.add_importance(importances, X[left_indices], y[left_indices])
+            self.left.add_importance(
+                importances, X[left_indices], y[left_indices], criterion
+            )
         if not self.right.is_terminal():
-            self.right.add_importance(importances, X[right_indices], y[right_indices])
+            self.right.add_importance(
+                importances, X[right_indices], y[right_indices], criterion
+            )
 
         return importances
 
