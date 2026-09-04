@@ -35,10 +35,23 @@ def misclassification(y):
     return float(1.0 - probabilities.max())
 
 
+def variance(y):
+    """Return the population variance of continuous targets."""
+    y = np.asarray(y, dtype=float).reshape(-1)
+    if y.size == 0:
+        return 0.0
+    return float(np.mean((y - np.mean(y)) ** 2))
+
+
 CRITERIA = {
     "gini": gini,
     "entropy": entropy,
     "misclassification": misclassification,
+}
+
+REGRESSION_CRITERIA = {
+    "squared_error": variance,
+    "variance": variance,
 }
 
 
@@ -47,11 +60,11 @@ def resolve_criterion(criterion):
     if callable(criterion):
         return criterion
     try:
-        return CRITERIA[criterion]
+        return {**CRITERIA, **REGRESSION_CRITERIA}[criterion]
     except KeyError:
         raise ValueError(
             f"unknown criterion {criterion!r}; expected a callable or one of "
-            f"{sorted(CRITERIA)}"
+            f"{sorted({**CRITERIA, **REGRESSION_CRITERIA})}"
         ) from None
 
 
